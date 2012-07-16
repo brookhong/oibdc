@@ -12,5 +12,6 @@ class NoteForm extends BaseNoteForm
 {
   public function configure()
   {
+    unset( $this['created_at'], $this['updated_at']);
   }
 }

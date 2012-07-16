@@ -12,20 +12,14 @@ class noteActions extends sfActions
 {
   public function executeIndex(sfWebRequest $request)
   {
-    $this->notes = Doctrine_Core::getTable('note')
-      ->createQuery('a')
-      ->execute();
-  }
-
-  public function executeShow(sfWebRequest $request)
-  {
-    $this->note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id')));
-    $this->forward404Unless($this->note);
-  }
-
-  public function executeNew(sfWebRequest $request)
-  {
-    $this->form = new noteForm();
+    $this->notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();
+    if($request->getParameter('id')) {
+      $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
+      $this->form = new noteForm($note);
+    }
+    else {
+      $this->form = new noteForm();
+    }
   }
 
   public function executeCreate(sfWebRequest $request)
@@ -36,13 +30,8 @@ class noteActions extends sfActions
 
     $this->processForm($request, $this->form);
 
-    $this->setTemplate('new');
-  }
-
-  public function executeEdit(sfWebRequest $request)
-  {
-    $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
-    $this->form = new noteForm($note);
+    $this->notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();
+    $this->setTemplate('index');
   }
 
   public function executeUpdate(sfWebRequest $request)
@@ -53,12 +42,13 @@ class noteActions extends sfActions
 
     $this->processForm($request, $this->form);
 
-    $this->setTemplate('edit');
+    $this->notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();
+    $this->setTemplate('index');
   }
 
   public function executeDelete(sfWebRequest $request)
   {
-    $request->checkCSRFProtection();
+    //$request->checkCSRFProtection();
 
     $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
     $note->delete();
@@ -73,7 +63,7 @@ class noteActions extends sfActions
     {
       $note = $form->save();
 
-      $this->redirect('note/edit?id='.$note->getId());
+      $this->redirect('note/index');
     }
   }
 }
