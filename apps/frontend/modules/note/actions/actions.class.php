@@ -12,7 +12,12 @@ class noteActions extends sfActions
 {
   public function executeIndex(sfWebRequest $request)
   {
-    $this->notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();
+    $q = Doctrine_Core::getTable('note')->createQuery('a');
+    $this->pager = new sfDoctrinePager('note', sfConfig::get('app_max_notes_each_page'));
+    $this->pager->setQuery($q);
+    $this->pager->setPage($request->getParameter('page', 1));
+    $this->pager->init();
+
     if($request->getParameter('id')) {
       $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
       $this->form = new noteForm($note);
