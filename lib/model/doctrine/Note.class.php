@@ -12,4 +12,44 @@
  */
 class Note extends BaseNote
 {
+    public function save(Doctrine_Connection $conn = null)
+    {
+        $conn = $conn ? $conn : $this->getTable()->getConnection();
+        $conn->beginTransaction();
+        try {
+            $ret = parent::save($conn);
+            $this->updateLuceneIndex();
+            $conn->commit();
+            return $ret;
+        } catch (Exception $e) {
+            $conn->rollBack();
+            throw $e;
+        }
+    }
+    public function updateLuceneIndex()
+    {
+        $index = NoteTable::getLuceneIndex();
+        // remove existing entries
+        foreach ($index->find('pk:'.$this->getId()) as $hit) {
+            $index->delete($hit->id);
+        }
+        $doc = new Zend_Search_Lucene_Document();
+        // store note primary key to identify it in the search results
+        $doc->addField(Zend_Search_Lucene_Field::Keyword('pk', $this->getId()));
+        // index note fields
+        $doc->addField(Zend_Search_Lucene_Field::UnStored('title', $this->getTitle(), 'utf-8'));
+        $doc->addField(Zend_Search_Lucene_Field::UnStored('content', $this->getContent(), 'utf-8'));
+        $doc->addField(Zend_Search_Lucene_Field::UnStored('tag', $this->getTag(), 'utf-8'));
+        // add note to the index
+        $index->addDocument($doc);
+        $index->commit();
+    }
+    public function delete(Doctrine_Connection $conn = null)
+    {
+        $index = NoteTable::getLuceneIndex();
+        foreach ($index->find('pk:'.$this->getId()) as $hit) {
+            $index->delete($hit->id);
+        }
+        return parent::delete($conn);
+    }
 }

@@ -10,65 +10,80 @@
  */
 class noteActions extends sfActions
 {
-  public function executeIndex(sfWebRequest $request)
-  {
-    $q = Doctrine_Core::getTable('note')->createQuery('a');
-    $this->pager = new sfDoctrinePager('note', sfConfig::get('app_max_notes_each_page'));
-    $this->pager->setQuery($q);
-    $this->pager->setPage($request->getParameter('page', 1));
-    $this->pager->init();
-
-    if($request->getParameter('id')) {
-      $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
-      $this->form = new noteForm($note);
-    }
-    else {
-      $this->form = new noteForm();
-    }
-  }
-
-  public function executeCreate(sfWebRequest $request)
-  {
-    $this->forward404Unless($request->isMethod(sfRequest::POST));
-
-    $this->form = new noteForm();
-
-    $this->processForm($request, $this->form);
-
-    $this->notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();
-    $this->setTemplate('index');
-  }
-
-  public function executeUpdate(sfWebRequest $request)
-  {
-    $this->forward404Unless($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT));
-    $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
-    $this->form = new noteForm($note);
-
-    $this->processForm($request, $this->form);
-
-    $this->notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();
-    $this->setTemplate('index');
-  }
-
-  public function executeDelete(sfWebRequest $request)
-  {
-    $request->checkCSRFProtection();
-
-    $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
-    $note->delete();
-
-    $this->redirect('note/index');
-  }
-
-  protected function processForm(sfWebRequest $request, sfForm $form)
-  {
-    $form->bind($request->getParameter($form->getName()), $request->getFiles($form->getName()));
-    if ($form->isValid())
+    public function executeIndex(sfWebRequest $request)
     {
-      $note = $form->save();
+        if (!$query = $request->getParameter('q')) {
+            $this->q = "";
+            $q = Doctrine_Core::getTable('note')->createQuery('a');
+        }
+        else {
+            $this->q = $query;
+            $hits = NoteTable::getLuceneIndex()->find($query);
+            $pks = array();
+            foreach ($hits as $hit) {
+                $pks[] = $hit->pk;
+            }
+            if (empty($pks)) {
+                $pks[] = -1;
+            }
+            $q = Doctrine_Core::getTable('note')->createQuery('j')->whereIn('j.id', $pks)->limit(20);
+        }
+        $this->pager = new sfDoctrinePager('note', sfConfig::get('app_max_notes_each_page'));
+        $this->pager->setQuery($q);
+        $this->pager->setPage($request->getParameter('page', 1));
+        $this->pager->init();
 
-      $this->redirect('note/index');
+        if($request->getParameter('id')) {
+            $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
+            $this->form = new NoteForm($note);
+        }
+        else {
+            $this->form = new NoteForm();
+        }
     }
-  }
+
+    public function executeCreate(sfWebRequest $request)
+    {
+        $this->forward404Unless($request->isMethod(sfRequest::POST));
+
+        $this->form = new NoteForm();
+
+        $this->processForm($request, $this->form);
+
+        $this->notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();
+        $this->setTemplate('index');
+    }
+
+    public function executeUpdate(sfWebRequest $request)
+    {
+        $this->forward404Unless($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT));
+        $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
+        $this->form = new NoteForm($note);
+
+        $this->processForm($request, $this->form);
+
+        $this->notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();
+        $this->setTemplate('index');
+    }
+
+    public function executeDelete(sfWebRequest $request)
+    {
+        $request->checkCSRFProtection();
+
+        $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
+        $note->delete();
+
+        $this->redirect('note/index');
+    }
+
+    protected function processForm(sfWebRequest $request, sfForm $form)
+    {
+        $form->bind($request->getParameter($form->getName()), $request->getFiles($form->getName()));
+        if ($form->isValid())
+        {
+            $note = $form->save();
+
+            $this->redirect('note/index');
+        }
+    }
 }

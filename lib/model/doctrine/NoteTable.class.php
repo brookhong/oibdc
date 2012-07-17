@@ -16,4 +16,17 @@ class NoteTable extends Doctrine_Table
     {
         return Doctrine_Core::getTable('Note');
     }
+    static public function getLuceneIndex()
+    {
+        ProjectConfiguration::registerZend();
+        $index = self::getLuceneIndexFile();
+        if (file_exists($index)) {
+            return Zend_Search_Lucene::open($index);
+        }
+        return Zend_Search_Lucene::create($index);
+    }
+    static public function getLuceneIndexFile()
+    {
+        return sfConfig::get('sf_cache_dir').'/note.'.sfConfig::get('sf_environment').'.index';
+    }
 }

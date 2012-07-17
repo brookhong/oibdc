@@ -1,4 +1,3 @@
-
 <?php if (!$form->getObject()->isNew()): ?>
   <h1>Edit Note
   <a href="<?php echo url_for('note/index') ?>">New</a></h1>
@@ -11,13 +10,7 @@
 <table class='note_list'>
   <thead>
     <tr>
-      <td colspan=4 align="right">
-        <span class="pagination_desc">
-          <strong><?php echo count($pager) ?></strong> notes found
-          <?php if ($pager->haveToPaginate()): ?>
-            - page <strong><?php echo $pager->getPage() ?>/<?php echo $pager->getLastPage() ?></strong>
-          <?php endif; ?>
-        </span>
+      <td colspan=3>
         <?php if ($pager->haveToPaginate()): ?>
           <span class="pagination">
             <a href="<?php echo url_for('note/index') ?>?page=1">|&lt;</a>
@@ -34,6 +27,17 @@
             <a href="<?php echo url_for('note/index') ?>?page=<?php echo $pager->getLastPage() ?>">&gt;|</a>
           </span>
         <?php endif; ?>
+        <span class="pagination_desc">
+          <strong><?php echo count($pager) ?></strong> notes found
+          <?php if ($pager->haveToPaginate()): ?>
+            - page <strong><?php echo $pager->getPage() ?>/<?php echo $pager->getLastPage() ?></strong>
+          <?php endif; ?>
+        </span>
+      </td>
+      <td align="right">
+        <form action="<?php echo url_for('note/index')?>">
+          <input type='text' name='q' value="<?php echo $q?>">
+        </form>
       </td>
     </tr>
   </thead>
