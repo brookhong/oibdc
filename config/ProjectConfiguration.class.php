@@ -24,6 +24,7 @@ class ProjectConfiguration extends sfProjectConfiguration
         set_include_path(sfConfig::get('sf_lib_dir').'/vendor'.PATH_SEPARATOR.get_include_path());
         require_once sfConfig::get('sf_lib_dir').'/vendor/Zend/Loader/Autoloader.php';
         Zend_Loader_Autoloader::getInstance();
+        Zend_Search_Lucene_Analysis_Analyzer::setDefault(new CN_Lucene_Analyzer());
         self::$zendLoaded = true;
     }
 }

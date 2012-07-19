@@ -16,6 +16,19 @@ class NoteTable extends Doctrine_Table
     {
         return Doctrine_Core::getTable('Note');
     }
+    static public function addIndexFor($note, $index)
+    {
+        $doc = new Zend_Search_Lucene_Document();
+        // store note primary key to identify it in the search results
+        $doc->addField(Zend_Search_Lucene_Field::Keyword('pk', $note->getId()));
+        // index note fields
+        $doc->addField(Zend_Search_Lucene_Field::UnStored('title', $note->getTitle(), 'utf-8'));
+        $doc->addField(Zend_Search_Lucene_Field::UnStored('content', $note->getContent(), 'utf-8'));
+        $doc->addField(Zend_Search_Lucene_Field::UnStored('tag', $note->getTag(), 'utf-8'));
+        // add note to the index
+        $index->addDocument($doc);
+        $index->commit();
+    }
     static public function getLuceneIndex()
     {
         ProjectConfiguration::registerZend();
@@ -23,7 +36,12 @@ class NoteTable extends Doctrine_Table
         if (file_exists($index)) {
             return Zend_Search_Lucene::open($index);
         }
-        return Zend_Search_Lucene::create($index);
+        $indexf = Zend_Search_Lucene::create($index);
+        $notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();;
+        foreach($notes as $note) {
+            self::addIndexFor($note, $indexf);
+        }
+        return $indexf;
     }
     static public function getLuceneIndexFile()
     {

@@ -33,16 +33,7 @@ class Note extends BaseNote
         foreach ($index->find('pk:'.$this->getId()) as $hit) {
             $index->delete($hit->id);
         }
-        $doc = new Zend_Search_Lucene_Document();
-        // store note primary key to identify it in the search results
-        $doc->addField(Zend_Search_Lucene_Field::Keyword('pk', $this->getId()));
-        // index note fields
-        $doc->addField(Zend_Search_Lucene_Field::UnStored('title', $this->getTitle(), 'utf-8'));
-        $doc->addField(Zend_Search_Lucene_Field::UnStored('content', $this->getContent(), 'utf-8'));
-        $doc->addField(Zend_Search_Lucene_Field::UnStored('tag', $this->getTag(), 'utf-8'));
-        // add note to the index
-        $index->addDocument($doc);
-        $index->commit();
+        NoteTable::addIndexFor($this,$index);
     }
     public function delete(Doctrine_Connection $conn = null)
     {

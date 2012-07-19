@@ -1,3 +1,11 @@
 .note_list {
     width:80%;
 }
+.display_none {
+    display:none;
+}
+.new_note_link {
+    background:#4477EE;
+    padding:0 80px 0 80px;
+    color:#ffffff;
+}
