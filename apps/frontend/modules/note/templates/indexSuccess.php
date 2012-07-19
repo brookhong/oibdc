@@ -10,13 +10,11 @@
     </td>
   </tr>
   <tr>
-    <td>
-      <span id="loader" style="vertical-align: middle; display:none;font-size:10pt">Searching ...</span>
+    <td colspan=2 align="center">
+      <div style="height:20px"><img id="loader" style="display:none" src="<?php echo image_path('loading.gif') ?>"/></div>
     </td>
   </tr>
 </table>
-<div id="note_edit_div" class="display_none" style="width:60%;background:#f0f0f0;border:1px solid #a0a0a0;margin:0px 2px 0px 2px;padding:0px 20px 10px 20px;">
-</div>
 <table class='note_list'>
   <thead>
     <tr>
@@ -66,14 +64,40 @@
 </table>
 <script type="text/javaScript">
 function newForm(id) {
-  url = (id==0) ? "<?php echo url_for('note/edit') ?>" : "<?php echo url_for('note/edit') ?>?id="+id;
-  $('#note_edit_div').load(url, function(){
-    $('#note_edit_div').removeClass('display_none');
-    var l = $('#note_content').closest("td").width();
-    $('#note_title').width(l);
-    $('#note_content').width(l);
-    $('#note_tag').width(l);
-    $('#note_content').height(180);
+  if(id == 0) {
+    link = "<?php echo url_for('note/edit') ?>";
+    title = "New Note";
+  } else {
+    link = "<?php echo url_for('note/edit') ?>?id="+id;
+    title = "Edit Note";
+  }
+  $.ajax({
+    url: link,
+      success: function(data) {
+        new Messi(data, {title: title, modal: true, width:'600px'});
+        var l = $('#note_content').closest("td").width();
+        $('#note_title').width(l);
+        $('#note_content').width(l);
+        $('#note_tag').width(l);
+        $('#note_content').height(180);
+        $('#note_content').select(function() {
+          var ot = $('#note_tag').val().toString();
+          if (ot != "")
+            ot = ot.split(",");
+          else
+            ot = [];
+          var at = x.Selector.getSelected().split(",");
+          for(i=0; i<at.length; i++) {
+            j = ot.indexOf(at[i]);
+            if (j != -1) {
+              ot.splice(j, 1);
+            } else {
+              ot.push(at[i]);
+            }
+          }
+          $('#note_tag').val(ot.toString());
+        });
+      }
   });
 }
 $(document).ready(function() {

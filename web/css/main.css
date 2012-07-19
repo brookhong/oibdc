@@ -1,6 +1,12 @@
 .note_list {
     width:80%;
 }
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
 .display_none {
     display:none;
 }

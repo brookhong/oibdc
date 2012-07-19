@@ -1,9 +1,3 @@
-<?php if (!$form->getObject()->isNew()): ?>
-  <h1>Edit Note</h1>
-<?php else: ?>
-  <h1>New Note</h1>
-<?php endif; ?>
-
 <?php use_stylesheets_for_form($form) ?>
 <?php use_javascripts_for_form($form) ?>
 
@@ -14,9 +8,9 @@
   <table style="width:100%">
     <tfoot>
       <tr>
-        <td> <input type="submit" value="Save" /> </td>
         <td></td>
-        <td> <input type="button" value="Cancel" onclick="javaScript:$('#note_edit_div').addClass('display_none');" /> </td>
+        <td align="center"> <input type="submit" value="Save" /> </td>
+        <td></td>
       </tr>
     </tfoot>
     <tbody>
@@ -39,22 +33,3 @@
     </tbody>
   </table>
 </form>
-<script type="text/javaScript">
-$('#<?php echo $form['content']->renderId()?>').select(function() {
-    var ot = $('#<?php echo $form['tag']->renderId()?>').val().toString();
-    if (ot != "")
-        ot = ot.split(",");
-    else
-        ot = [];
-    var at = x.Selector.getSelected().split(",");
-    for(i=0; i<at.length; i++) {
-        j = ot.indexOf(at[i]);
-        if (j != -1) {
-            ot.splice(j, 1);
-        } else {
-            ot.push(at[i]);
-        }
-    }
-    $('#<?php echo $form['tag']->renderId()?>').val(ot.toString());
-});
-</script>

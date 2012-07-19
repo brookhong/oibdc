@@ -14,7 +14,7 @@ class noteActions extends sfActions
     {
         if (!$query = $request->getParameter('q')) {
             $this->q = "";
-            $q = Doctrine_Core::getTable('note')->createQuery('a');
+            $q = Doctrine_Core::getTable('note')->createQuery('a')->orderBy('updated_at DESC');
         }
         else {
             $this->q = $query;
