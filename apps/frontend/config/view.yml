@@ -12,9 +12,9 @@ default:
     #language:     en
     #robots:       index, follow
 
-  stylesheets:    [main.css, messi.css]
+  stylesheets:    [main.css, jquery-ui-1.8.21.custom.css]
 
-  javascripts:    [jquery.min.js, utils.js, messi.js]
+  javascripts:    [jquery.min.js, utils.js, jquery-ui-1.8.21.custom.min.js]
 
   has_layout:     true
   layout:         layout

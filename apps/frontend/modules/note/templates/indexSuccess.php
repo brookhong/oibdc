@@ -74,7 +74,14 @@ function newForm(id) {
   $.ajax({
     url: link,
       success: function(data) {
-        new Messi(data, {title: title, modal: true, width:'600px'});
+        $('.note_list').after(data);
+        $('#note_edit_div').dialog({modal:true,
+            close:function(){$(this).dialog( "destroy" );$('#note_edit_div').remove();},
+            title:title,
+            resizable:false,
+            minWidth:600,
+            minHeight:376
+        });
         var l = $('#note_content').closest("td").width();
         $('#note_title').width(l);
         $('#note_content').width(l);
@@ -88,7 +95,7 @@ function newForm(id) {
             ot = [];
           var at = x.Selector.getSelected().split(",");
           for(i=0; i<at.length; i++) {
-            j = ot.indexOf(at[i]);
+            j = jQuery.inArray(at[i], ot);
             if (j != -1) {
               ot.splice(j, 1);
             } else {
