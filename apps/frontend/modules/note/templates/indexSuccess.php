@@ -6,7 +6,7 @@
       </form>
     </td>
     <td align="right">
-      <a href="javaScript:void(0);" onclick="javaScript:newForm(0);" class="new_note_link">New Note</a>
+      <a href="javaScript:void(0);" onclick="javaScript:newForm(this,0);" class="new_note_link button">New Note</a>
     </td>
   </tr>
   <tr>
@@ -53,8 +53,8 @@
     <tr>
       <td><?php echo $note->getContent() ?></td>
       <td><?php echo $note->getTag() ?></td>
-      <td><?php echo link_to('Delete', 'note/delete?id='.$note->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?')) ?></td>
-      <td><a href="javaScript:void(0);" onclick="javaScript:newForm(<?php echo $note->getId() ?>);">Edit</a></td>
+      <td><?php echo link_to('Delete', 'note/delete?id='.$note->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?', 'class'=>'button')) ?></td>
+      <td><a href="javaScript:void(0);" onclick="javaScript:newForm(this, <?php echo $note->getId() ?>);" class='button'>Edit</a></td>
     </tr>
     <tr>
       <td colspan=4 align="right"><span>Created at <?php echo $note->getCreatedAt() ?></span><span align="right" style="margin-left:50px">Last updated at <?php echo $note->getUpdatedAt() ?></span></td>
@@ -63,7 +63,46 @@
   </tbody>
 </table>
 <script type="text/javaScript">
-function newForm(id) {
+function on_form_ready(data) {
+  $('#note_edit_td').html(data);
+  $(".button").button();
+  var l = $('#note_content').closest("td").width();
+  $('#note_title').width(l);
+  $('#note_tag').width(l);
+  $('#note_content').width(l);
+  $('#note_content').height(180);
+  $('#note_content').select(function() {
+    var ot = $('#note_tag').val().toString();
+    if (ot != "")
+      ot = ot.split(",");
+    else
+      ot = [];
+    var at = x.Selector.getSelected().split(",");
+    for(i=0; i<at.length; i++) {
+      j = jQuery.inArray(at[i], ot);
+      if (j != -1) {
+        ot.splice(j, 1);
+      } else {
+        ot.push(at[i]);
+      }
+    }
+    $('#note_tag').val(ot.toString());
+  });
+}
+function on_form_save(e) {
+  form = $(e).closest('form');
+  $.post(form.attr('action'), form.serialize(),function(data) {
+    if(data.indexOf('<div id="note_edit_div"') == 0) {
+      on_form_ready(data);
+    } else {
+      $('.note_list').html(data);
+      $(".button").button();
+      $('#note_edit_td').closest('tr').remove();
+    }
+  });
+}
+function newForm(e,id) {
+  tr = $(e).closest('tr');
   if(id == 0) {
     link = "<?php echo url_for('note/edit') ?>";
     title = "New Note";
@@ -71,41 +110,9 @@ function newForm(id) {
     link = "<?php echo url_for('note/edit') ?>?id="+id;
     title = "Edit Note";
   }
-  $.ajax({
-    url: link,
-      success: function(data) {
-        $('.note_list').after(data);
-        $('#note_edit_div').dialog({modal:true,
-            close:function(){$(this).dialog( "destroy" );$('#note_edit_div').remove();},
-            title:title,
-            resizable:false,
-            minWidth:600,
-            minHeight:376
-        });
-        var l = $('#note_content').closest("td").width();
-        $('#note_title').width(l);
-        $('#note_content').width(l);
-        $('#note_tag').width(l);
-        $('#note_content').height(180);
-        $('#note_content').select(function() {
-          var ot = $('#note_tag').val().toString();
-          if (ot != "")
-            ot = ot.split(",");
-          else
-            ot = [];
-          var at = x.Selector.getSelected().split(",");
-          for(i=0; i<at.length; i++) {
-            j = jQuery.inArray(at[i], ot);
-            if (j != -1) {
-              ot.splice(j, 1);
-            } else {
-              ot.push(at[i]);
-            }
-          }
-          $('#note_tag').val(ot.toString());
-        });
-      }
-  });
+  $('#note_edit_td').closest('tr').remove();
+  tr.after("<tr><td id='note_edit_td' colspan="+tr.children().length+" align='center'><img src=\"<?php echo image_path('loading.gif') ?>\"/></td></tr>");
+  $.ajax({ url: link, success: on_form_ready});
 }
 $(document).ready(function() {
   $('#search_input').keyup(function(key) {
@@ -114,5 +121,6 @@ $(document).ready(function() {
         $('.note_list').load($(this).parents('form').attr('action'), { q: this.value }, function() { $('#loader').hide(); });
       }
     });
+  $(".button").button();
 });
 </script>

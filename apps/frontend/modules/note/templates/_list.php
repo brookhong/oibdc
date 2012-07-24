@@ -35,8 +35,8 @@
     <tr>
       <td><?php echo $note->getContent() ?></td>
       <td><?php echo $note->getTag() ?></td>
-      <td><?php echo link_to('Delete', 'note/delete?id='.$note->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?')) ?></td>
-      <td><a href="<?php echo url_for('note/index?id='.$note->getId()) ?>">Edit</a></td>
+      <td><?php echo link_to('Delete', 'note/delete?id='.$note->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?', 'class'=>'button')) ?></td>
+      <td><a href="javaScript:void(0);" onclick="javaScript:newForm(this, <?php echo $note->getId() ?>);" class='button'>Edit</a></td>
     </tr>
     <tr>
       <td colspan=4 align="right"><span>Created at <?php echo $note->getCreatedAt() ?></span><span align="right" style="margin-left:50px">Last updated at <?php echo $note->getUpdatedAt() ?></span></td>

@@ -58,10 +58,14 @@ class noteActions extends sfActions
 
         $this->form = new NoteForm();
 
-        $this->processForm($request, $this->form);
+        $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
+        if ($this->form->isValid()) {
+            $note = $this->form->save();
 
-        $this->notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();
-        $this->setTemplate('index');
+            $this->redirect('note/index');
+        } else {
+            return $this->renderPartial('note/form', array('form' => $this->form));
+        }
     }
 
     public function executeUpdate(sfWebRequest $request)
@@ -70,10 +74,14 @@ class noteActions extends sfActions
         $this->forward404Unless($note = Doctrine_Core::getTable('note')->find(array($request->getParameter('id'))), sprintf('Object note does not exist (%s).', $request->getParameter('id')));
         $this->form = new NoteForm($note);
 
-        $this->processForm($request, $this->form);
+        $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
+        if ($this->form->isValid()) {
+            $note = $this->form->save();
 
-        $this->notes = Doctrine_Core::getTable('note')->createQuery('a')->execute();
-        $this->setTemplate('index');
+            $this->redirect('note/index');
+        } else {
+            return $this->renderPartial('note/form', array('form' => $this->form));
+        }
     }
 
     public function executeDelete(sfWebRequest $request)
@@ -84,16 +92,5 @@ class noteActions extends sfActions
         $note->delete();
 
         $this->redirect('note/index');
-    }
-
-    protected function processForm(sfWebRequest $request, sfForm $form)
-    {
-        $form->bind($request->getParameter($form->getName()), $request->getFiles($form->getName()));
-        if ($form->isValid())
-        {
-            $note = $form->save();
-
-            $this->redirect('note/index');
-        }
     }
 }
