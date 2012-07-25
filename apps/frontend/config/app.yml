@@ -1,2 +1,2 @@
 all:
-  max_notes_each_page: 2
+  max_notes_each_page: 10

@@ -3,4 +3,4 @@ Note:
   columns:
     title: { type: string(255) }
     content: { type: string(4000), notnull: true }
-    tag: { type: string(255), notnull: true }
+    tag: { type: string(255) }

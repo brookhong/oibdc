@@ -2,7 +2,7 @@
   <tr>
     <td>
       <form action="<?php echo url_for('note/index')?>">
-        <input type='text' name='q' value="<?php echo $q?>" id="search_input">
+        <input type='text' name='q' value="<?php echo $q?>" id="search_input" class="search" onblur="if(this.value != '')$(this).addClass('text');else $(this).removeClass('text');">
       </form>
     </td>
     <td align="right">
@@ -71,22 +71,9 @@ function on_form_ready(data) {
   $('#note_tag').width(l);
   $('#note_content').width(l);
   $('#note_content').height(180);
-  $('#note_content').select(function() {
-    var ot = $('#note_tag').val().toString();
-    if (ot != "")
-      ot = ot.split(",");
-    else
-      ot = [];
-    var at = x.Selector.getSelected().split(",");
-    for(i=0; i<at.length; i++) {
-      j = jQuery.inArray(at[i], ot);
-      if (j != -1) {
-        ot.splice(j, 1);
-      } else {
-        ot.push(at[i]);
-      }
-    }
-    $('#note_tag').val(ot.toString());
+  $('#note_content').select(function(e) {
+    var at = $.trim(x.Selector.getSelected());
+    $('#note_title').val(at);
   });
 }
 function on_form_save(e) {
@@ -118,7 +105,7 @@ $(document).ready(function() {
   $('#search_input').keyup(function(key) {
       if (this.value.length >= 3 || this.value == '') {
         $('#loader').show();
-        $('.note_list').load($(this).parents('form').attr('action'), { q: this.value }, function() { $('#loader').hide(); });
+        $('.note_list').load($(this).parents('form').attr('action'), { q: this.value }, function() { $('#loader').hide(); $('.button').button();});
       }
     });
   $(".button").button();

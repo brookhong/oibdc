@@ -37,7 +37,6 @@ abstract class BaseNote extends sfDoctrineRecord
              ));
         $this->hasColumn('tag', 'string', 255, array(
              'type' => 'string',
-             'notnull' => true,
              'length' => 255,
              ));
     }

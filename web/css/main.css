@@ -15,3 +15,13 @@ a:hover {
     padding:0 80px 0 80px;
     color:#ffffff;
 }
+input.search {
+    border:1px solid #c8c8c8;
+    width:220px; height:18px;
+    background:white url(/images/search_bg.gif) left top no-repeat;
+    padding:0 0 0 20px;
+}
+input.search:focus, input.text {
+    background:white url(/images/search_bg.gif) left -21px no-repeat;
+}
+
