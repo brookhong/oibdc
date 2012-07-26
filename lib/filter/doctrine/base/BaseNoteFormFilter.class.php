@@ -15,7 +15,7 @@ abstract class BaseNoteFormFilter extends BaseFormFilterDoctrine
     $this->setWidgets(array(
       'title'      => new sfWidgetFormFilterInput(),
       'content'    => new sfWidgetFormFilterInput(array('with_empty' => false)),
-      'tag'        => new sfWidgetFormFilterInput(array('with_empty' => false)),
+      'tag'        => new sfWidgetFormFilterInput(),
       'created_at' => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate(), 'with_empty' => false)),
       'updated_at' => new sfWidgetFormFilterDate(array('from_date' => new sfWidgetFormDate(), 'to_date' => new sfWidgetFormDate(), 'with_empty' => false)),
     ));
