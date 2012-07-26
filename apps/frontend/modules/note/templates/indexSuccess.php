@@ -5,12 +5,19 @@
         <input type='text' name='q' value="<?php echo $q?>" id="search_input" class="search" onblur="if(this.value != '')$(this).addClass('text');else $(this).removeClass('text');">
       </form>
     </td>
+    <td>
+      <?php if ($sf_user->isAuthenticated()): ?>
+        <?php echo link_to('Logout', 'guard/logout', array('class'=>'button')) ?>
+      <?php else: ?>
+        <?php echo link_to('Login', 'guard/login', array('class'=>'button')) ?>
+      <?php endif ?>
+    </td>
     <td align="right">
       <a href="javaScript:void(0);" onclick="javaScript:newForm(this,0);" class="new_note_link button">New Note</a>
     </td>
   </tr>
   <tr>
-    <td colspan=2 align="center">
+    <td colspan=3 align="center">
       <div style="height:20px"><img id="loader" style="display:none" src="<?php echo image_path('loading.gif') ?>"/></div>
     </td>
   </tr>
