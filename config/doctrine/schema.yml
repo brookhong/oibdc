@@ -4,3 +4,10 @@ Note:
     title: { type: string(255) }
     content: { type: string(4000), notnull: true }
     tag: { type: string(255) }
+
+BMP:
+  actAs: { Timestampable: ~ }
+  columns:
+    ip: { type: string(16) }
+    content: { type: string(4000), notnull: true }
+    email: { type: string(255) }
